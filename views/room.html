@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Room</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">
+    <link rel="stylesheet" href="room.css">
+    <style>
+        .video-container video {
+            width: 250px; /* 가로 크기 설정 */
+            height: 250px; /* 세로 크기 설정 */
+            object-fit: cover; /* 비디오 비율에 맞게 자르기 */
+        }
+    </style>
+</head>
+<body>
+    <h1 class="text-center my-3">화상 회의</h1>
+    <div class="container-fluid d-flex" id="roomContainer">
+        <!-- 왼쪽: 비디오 화면 -->
+        <div class="video-container flex-grow-1">
+            <video id="myFace" autoplay muted class="border"></video> 
+        </div>
+        <div class="video-wrapper">
+            <video id="peerFace" autoplay hidden class="w-100 border"></video>
+        </div>
+        <div class="settings-container">
+            <button id="settingsButton" class="btn btn-secondary">카메라/마이크 설정</button>
+            <div id="deviceSettings" style="display: none;">
+                <label for="cameraSelect">카메라:</label>
+                <select id="cameraSelect"></select>
+                <label for="micSelect">마이크:</label>
+                <select id="micSelect"></select>
+                <button id="applySettings" class="btn btn-primary">적용</button>
+            </div>
+        </div>
+
+        <!-- 오른쪽: 채팅 -->
+        <div class="chat-container border-start ps-3">
+            <div id="chat">
+                <ul id="messages" class="mb-3 list-unstyled"></ul>
+                <form id="chatForm">
+                    <input id="chatInput" class="form-control" placeholder="메시지를 입력하세요">
+                    <button class="btn btn-primary mt-2 w-100">전송</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdn.socket.io/4.5.3/socket.io.min.js"
+    integrity="sha384-WPFUvHkB1aHA5TDSZi6xtDgkF0wXJcIIxXhC6h8OT8EH3fC5PWro5pWJ1THjcfEi"
+    crossorigin="anonymous"
+      ></script>
+    <script src="room.js"></script>
+</body>
+</html>

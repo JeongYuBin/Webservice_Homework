@@ -1,0 +1,104 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+#roomContainer {
+    flex: 1;
+    display: flex;
+}
+
+/* 기본적인 비디오 화면 설정 */
+.video-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    max-width: 100%;
+}
+
+video {
+    border: 2px solid #ccc;
+    max-width: 100%;
+    object-fit: cover;
+}
+
+/* 1명일 때, 비디오 화면을 100% 차지하도록 설정 */
+.video-container.one-user video {
+    width: 100%;
+    height: auto;
+}
+
+/* 2명일 때, 비디오 화면을 50%씩 나누기 */
+.video-container.two-users video {
+    width: 48%; /* 두 비디오 화면을 가로로 50%씩 나눈다 */
+    height: auto;
+}
+
+/* 3명일 때, 삼각형 모양 배치 */
+.video-container.three-users {
+    display: grid;
+    grid-template-columns: 40% 30% 30%;
+    grid-template-rows: 40% 30% 30%;
+    justify-items: center;
+    gap: 10px;
+}
+
+/* 추가적으로 비디오를 삼각형 모양으로 배치 */
+.video-container.three-users video:nth-child(1) {
+    grid-column: 1 / 2;
+    grid-row: 1 / 2;
+}
+
+.video-container.three-users video:nth-child(2) {
+    grid-column: 2 / 3;
+    grid-row: 1 / 2;
+}
+
+.video-container.three-users video:nth-child(3) {
+    grid-column: 2 / 3;
+    grid-row: 2 / 3;
+}
+
+/* 화면 크기에 맞게 조정 */
+@media (max-width: 768px) {
+    .video-container.one-user video, 
+    .video-container.two-users video, 
+    .video-container.three-users video {
+        width: 100%;
+        height: auto;
+    }
+}
+
+.settings-container {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    background-color: rgba(0, 0, 0, 0.7);
+    padding: 10px;
+    border-radius: 8px;
+    color: white;
+}
+
+#deviceSettings {
+    margin-top: 10px;
+}
+
+.chat-container {
+    width: 30%;
+    max-width: 400px;
+    display: flex;
+    flex-direction: column;
+}
+
+#messages {
+    height: 70%;
+    overflow-y: auto;
+    border: 1px solid #ddd;
+    padding: 10px;
+    margin-bottom: 10px;
+}

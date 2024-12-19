@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>회원가입</title>
+    <link rel="stylesheet" href="/styles.css">
+    <script>
+        let isDuplicateChecked = false;  // 중복 체크 여부 추적
+
+        // 페이지 로드 시 기본적으로 회원가입 버튼 비활성화
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('submitBtn').disabled = true;  // 기본적으로 비활성화
+        });
+
+        // ID 입력 시 중복 체크 버튼 활성화
+        function handleIDInput() {
+            const idInput = document.getElementById('id').value;
+            const duplicateCheckBtn = document.getElementById('duplicateCheckBtn');
+            duplicateCheckBtn.disabled = idInput.length < 1; // 한 글자 이상일 때만 활성화
+
+            // ID가 변경되면 중복 체크가 필요하므로 플래그 초기화
+            isDuplicateChecked = false;
+            enableSubmitButton();  // 버튼 활성화 여부 확인
+        }
+
+        // ID 중복 체크
+        function checkDuplicateID() {
+            const id = document.getElementById('id').value;
+            const checkResult = document.getElementById('checkResult');
+            const submitBtn = document.getElementById('submitBtn');
+
+            if (!id) {
+                checkResult.innerHTML = 'ID를 입력해주세요';
+                return;
+            }
+
+            // 서버로 중복 체크 요청
+            fetch(`/check-id?id=${id}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.exists) {
+                        checkResult.innerHTML = '이미 사용 중인 ID입니다.';
+                        isDuplicateChecked = false; // 중복된 경우
+                        submitBtn.disabled = true;  // ID가 중복되면 회원가입 버튼 비활성화
+                    } else {
+                        checkResult.innerHTML = '사용 가능한 ID입니다.';
+                        isDuplicateChecked = true;  // 사용 가능한 경우
+                    }
+                    enableSubmitButton();  // 중복 체크 후 회원가입 버튼 활성화 여부 확인
+                });
+        }
+
+        // 비밀번호 일치 여부 확인
+        function checkPasswordMatch() {
+            const pw1 = document.getElementById('password1').value;
+            const pw2 = document.getElementById('password2').value;
+            const pwMatchResult = document.getElementById('pwMatchResult');
+
+            if (pw1 && pw2) {
+                if (pw1 === pw2) {
+                    pwMatchResult.innerHTML = '비밀번호가 일치합니다.';
+                } else {
+                    pwMatchResult.innerHTML = '비밀번호가 일치하지 않습니다.';
+                }
+            } else {
+                pwMatchResult.innerHTML = ''; // 둘 다 입력하지 않은 경우 메시지 지움
+            }
+
+            enableSubmitButton();  // 비밀번호 확인 후 회원가입 버튼 활성화 여부 확인
+        }
+
+        // 전화번호 형식 확인
+        function validatePhoneNumber() {
+            const phone = document.getElementById('phone').value;
+            const phoneResult = document.getElementById('phoneResult');
+            const phonePattern = /^010-\d{4}-\d{4}$/;
+
+            if (phonePattern.test(phone)) {
+                phoneResult.innerHTML = '올바른 전화번호 형식입니다.';
+            } else {
+                phoneResult.innerHTML = '전화번호는 010-0000-0000 형식으로 입력해주세요.';
+            }
+            enableSubmitButton();
+        }
+
+        // 회원가입 버튼 활성화
+        function enableSubmitButton() {
+            const pw1 = document.getElementById('password1').value;
+            const pw2 = document.getElementById('password2').value;
+            const phone = document.getElementById('phone').value;
+            const submitBtn = document.getElementById('submitBtn');
+
+            // ID 중복 체크가 완료되고, 비밀번호가 일치하며, 비밀번호가 입력되었을 때만 회원가입 버튼 활성화
+            const phonePattern = /^010-\d{4}-\d{4}$/;
+            if (isDuplicateChecked && pw1 === pw2 && pw1 && pw2 && phonePattern.test(phone)) {
+                submitBtn.disabled = false;
+            } else {
+                submitBtn.disabled = true;
+            }
+        }
+
+        // onblur로 실시간 비밀번호 확인
+        function handlePasswordBlur() {
+            checkPasswordMatch();
+        }
+    </script>
+</head>
+<body>
+    <div class="register-container">
+        <h1>회원가입</h1>
+        <form action="/register" method="POST">
+            <div class="form-group">
+                <label for="name">이름:</label>
+                <input type="text" id="name" name="name" required>
+            </div>
+            <div class="form-group">
+                <label for="phone">전화번호:</label>
+                <input type="text" id="phone" name="phone" placeholder="010-0000-0000" oninput="validatePhoneNumber()" required>
+                <span id="phoneResult" style="color: red;"></span>
+            </div>
+            <div class="form-group">
+                <label for="id">ID:</label>
+                <input type="text" id="id" name="id" oninput="handleIDInput()">
+                <button type="button" id="duplicateCheckBtn" disabled onclick="checkDuplicateID()">중복 ID 체크</button>
+                <span id="checkResult" style="color: red;"></span>
+            </div>
+            <div class="form-group">
+                <label for="password1">비밀번호:</label>
+                <input type="password" id="password1" name="password1" oninput="checkPasswordMatch()" onblur="handlePasswordBlur()">
+            </div>
+            <div class="form-group">
+                <label for="password2">비밀번호 확인:</label>
+                <input type="password" id="password2" name="password2" oninput="checkPasswordMatch()" onblur="handlePasswordBlur()">
+                <span id="pwMatchResult" style="color: red;"></span>
+            </div>
+            <div class="form-group">
+                <button type="submit" id="submitBtn" disabled>회원가입</button>
+            </div>
+        </form>
+    </div>
+</body>
+</html>
